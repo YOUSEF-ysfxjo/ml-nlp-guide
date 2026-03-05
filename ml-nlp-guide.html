@@ -1,0 +1,502 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ML & NLP Comprehensive Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <div class="read-progress" id="readProgress"></div>
+
+  <div class="header-bar">
+    <h1>🧠 ML & NLP Guide</h1>
+    <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+      <span class="icon-sun" aria-hidden="true">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="5"/><path d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42"/></svg>
+      </span>
+      <span class="icon-moon" aria-hidden="true" style="display:none;">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </span>
+      <span id="themeLabel">Dark mode</span>
+    </button>
+  </div>
+
+  <div class="layout">
+    <aside class="toc-sidebar">
+      <div class="toc-title">On this page</div>
+      <nav class="toc-nav" id="tocNav"></nav>
+    </aside>
+
+    <main class="main-content">
+      <header class="hero">
+        <h1>Comprehensive Guide to Machine Learning & NLP Foundations</h1>
+        <p class="subtitle">From Linear Models to Word Embeddings — A Complete Breakdown</p>
+      </header>
+
+      <section class="section" id="1-the-linear-model">
+        <h2><span class="num">1.</span> The Linear Model</h2>
+        <p>The <strong>simplest model</strong> in all of machine learning is:</p>
+        <div class="code-block"><pre><code>y = Wx + b</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <h3>What Each Symbol Means</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Symbol</th><th>Name</th><th>Description</th><th>Example</th></tr></thead>
+            <tbody>
+              <tr><td><code>x</code></td><td>Input / Features</td><td>The raw data you feed in</td><td><code>x = [word_count, sentence_length]</code></td></tr>
+              <tr><td><code>W</code></td><td>Weights</td><td>How much influence each feature has</td><td>A matrix of numbers the model learns</td></tr>
+              <tr><td><code>b</code></td><td>Bias</td><td>Shifts the output up or down</td><td>Allows the model to fit data not centered at the origin</td></tr>
+              <tr><td><code>y</code></td><td>Output</td><td>The prediction</td><td>A class label, a score, etc.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>What Does It Do Geometrically?</h3>
+        <p>In 2D space, a linear model draws a <strong>straight line</strong> to separate two classes:</p>
+        <div class="code-block"><pre><code>ax + by + c = 0</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>In 3D, it draws a <strong>plane</strong>. In higher dimensions, it draws a <strong>hyperplane</strong>.</p>
+        <h3>Concrete Example</h3>
+        <p>Imagine classifying an email as spam or not-spam:</p>
+        <div class="code-block"><pre><code>x = [number_of_links, number_of_caps, message_length]
+W = [0.8, 0.6, -0.1]     ← learned weights
+b = -2.0                   ← learned bias
+
+y = (0.8 × links) + (0.6 × caps) + (-0.1 × length) - 2.0</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>If <code>y > 0</code> → Spam. If <code>y < 0</code> → Not spam.</p>
+      </section>
+
+      <section class="section" id="2-the-problem-with-linear-models">
+        <h2><span class="num">2.</span> The Problem with Linear Models</h2>
+        <p>Linear models are powerful but have a <strong>fundamental limitation</strong>:</p>
+        <blockquote>
+          <p>✅ They can learn <strong>linear</strong> relationships</p>
+          <p>❌ They <strong>cannot</strong> learn <strong>non-linear</strong> relationships</p>
+        </blockquote>
+        <h3>The XOR Problem — A Classic Example</h3>
+        <p>Consider this truth table:</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Input A</th><th>Input B</th><th>Output (A XOR B)</th></tr></thead>
+            <tbody>
+              <tr><td>0</td><td>0</td><td>0</td></tr>
+              <tr><td>0</td><td>1</td><td>1</td></tr>
+              <tr><td>1</td><td>0</td><td>1</td></tr>
+              <tr><td>1</td><td>1</td><td>0</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p>If you plot these 4 points, <strong>no single straight line</strong> can separate the 1s from the 0s. The pattern is inherently non-linear.</p>
+        <div class="code-block"><pre><code>  B
+  |
+1 |  ○  ✕
+  |
+0 |  ✕  ○
+  +--------A
+     0    1
+
+○ = Output 0
+✕ = Output 1
+→ No straight line can separate them!</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>This means: <strong>A single linear model cannot solve XOR.</strong> This was actually a major crisis in early AI, famously described by Minsky & Papert in 1969.</p>
+      </section>
+
+      <section class="section" id="3-neural-networks">
+        <h2><span class="num">3.</span> Neural Networks</h2>
+        <p>The solution: <strong>stack multiple layers</strong> to build a network that can model complex, non-linear patterns.</p>
+        <h3>Architecture</h3>
+        <div class="code-block"><pre><code>Input Layer
+    ↓
+Hidden Layer 1  ← learns low-level features
+    ↓
+Hidden Layer 2  ← learns high-level features
+    ↓
+Output Layer    ← makes the final prediction</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <h3>What Happens in Each Layer?</h3>
+        <p>Every layer performs <strong>two operations</strong>:</p>
+        <p><strong>Step 1 — Linear transformation:</strong></p>
+        <div class="code-block"><pre><code>z = Wx + b</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p><strong>Step 2 — Activation:</strong></p>
+        <div class="code-block"><pre><code>a = f(z)</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>Where <code>f</code> is an <strong>activation function</strong> (more on this below).</p>
+        <h3>A Concrete Example</h3>
+        <p>Say you're building a network to recognize handwritten digits (0–9):</p>
+        <ul>
+          <li><strong>Layer 1</strong> might detect edges and curves</li>
+          <li><strong>Layer 2</strong> might detect shapes like loops or lines</li>
+          <li><strong>Layer 3</strong> might combine those into digit patterns</li>
+          <li><strong>Output</strong> picks the most likely digit</li>
+        </ul>
+        <p>Each layer transforms the data into a new, more useful representation.</p>
+      </section>
+
+      <section class="section" id="4-activation-functions">
+        <h2><span class="num">4.</span> Activation Functions</h2>
+        <h3>Why Are They Necessary?</h3>
+        <p>Imagine a 2-layer network <strong>without</strong> activation functions:</p>
+        <div class="code-block"><pre><code>Layer 1:  z₁ = W₁x + b₁
+Layer 2:  z₂ = W₂z₁ + b₂</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>Substitute Layer 1 into Layer 2:</p>
+        <div class="code-block"><pre><code>z₂ = W₂(W₁x + b₁) + b₂
+   = (W₂W₁)x + (W₂b₁ + b₂)
+   = W_newx + b_new</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p><strong>You just collapsed it into a single linear model.</strong> No matter how many layers you add, without activation functions, the entire network is equivalent to one linear layer.</p>
+        <h3>Common Activation Functions</h3>
+        <h4>ReLU (Rectified Linear Unit)</h4>
+        <div class="code-block"><pre><code>f(z) = max(0, z)</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <ul>
+          <li>If <code>z = -5</code> → output is <code>0</code>; if <code>z = 3</code> → output is <code>3</code></li>
+          <li><strong>Fast to compute</strong>, works great in deep networks</li>
+          <li>Most commonly used today</li>
+        </ul>
+        <h4>Sigmoid</h4>
+        <div class="code-block"><pre><code>f(z) = 1 / (1 + e^(-z))</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <ul>
+          <li>Outputs values between <strong>0 and 1</strong></li>
+          <li>Great for <strong>binary classification</strong></li>
+          <li>Problem: "vanishing gradients" in deep networks</li>
+        </ul>
+        <h4>Tanh (Hyperbolic Tangent)</h4>
+        <div class="code-block"><pre><code>f(z) = (e^z - e^(-z)) / (e^z + e^(-z))</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <ul>
+          <li>Outputs values between <strong>-1 and 1</strong></li>
+          <li>Zero-centered (better than sigmoid for hidden layers)</li>
+          <li>Also suffers from vanishing gradients</li>
+        </ul>
+      </section>
+
+      <section class="section" id="5-learnable-parameters">
+        <h2><span class="num">5.</span> Learnable Parameters</h2>
+        <h3>What Does a Model Actually Learn?</h3>
+        <p>A neural network learns its <strong>parameters</strong>:</p>
+        <ul>
+          <li><strong>Weights (W)</strong> — how strongly each input influences each output</li>
+          <li><strong>Biases (b)</strong> — a constant offset that shifts the decision boundary</li>
+        </ul>
+        <p>These are called <strong>Learnable Parameters</strong> because they start as random values and are gradually improved through training.</p>
+        <h3>How Many Parameters Does a Model Have?</h3>
+        <p>For a single layer with input size 784 (e.g., 28×28 pixel image) and output size 256 neurons:</p>
+        <div class="code-block"><pre><code>Weights: 784 × 256 = 200,704
+Biases:  256
+Total:   200,960 parameters</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>Modern LLMs (like GPT-4) have <strong>hundreds of billions</strong> of parameters.</p>
+      </section>
+
+      <section class="section" id="6-optimization">
+        <h2><span class="num">6.</span> Optimization — How Networks Learn</h2>
+        <h3>The Core Idea</h3>
+        <p>Learning = finding the values of <code>W</code> and <code>b</code> that make predictions as accurate as possible. This is done by <strong>minimizing a Loss Function <code>L</code></strong>, which measures how wrong the model is.</p>
+        <h3>Loss Functions (Examples)</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Task</th><th>Common Loss Function</th></tr></thead>
+            <tbody>
+              <tr><td>Binary Classification</td><td>Binary Cross-Entropy</td></tr>
+              <tr><td>Multi-class Classification</td><td>Categorical Cross-Entropy</td></tr>
+              <tr><td>Regression</td><td>Mean Squared Error (MSE)</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <h3>Gradient Descent</h3>
+        <div class="code-block"><pre><code>θ = θ - η∇L</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>Where: <code>θ</code> (theta) = parameters (W and b); <code>η</code> (eta) = <strong>learning rate</strong>; <code>∇L</code> = <strong>gradient</strong>.</p>
+        <p><strong>Intuition:</strong> Imagine you're blindfolded on a hilly terrain and want to find the lowest valley. Gradient descent tells you which direction is "downhill" and takes a step in that direction.</p>
+        <h3>Popular Optimization Algorithms</h3>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Algorithm</th><th>Description</th><th>Advantage</th></tr></thead>
+            <tbody>
+              <tr><td><strong>Gradient Descent</strong></td><td>Computes gradient over entire dataset</td><td>Stable but slow</td></tr>
+              <tr><td><strong>SGD</strong></td><td>One sample at a time</td><td>Fast but noisy</td></tr>
+              <tr><td><strong>Adam</strong></td><td>Adaptive learning rates per parameter</td><td>Best of both worlds; most popular</td></tr>
+              <tr><td><strong>RMSProp</strong></td><td>Maintains moving average of gradients</td><td>Good for RNNs</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p><strong>Backpropagation</strong> — the chain rule applied backwards through the network to calculate how much each weight contributed to the error.</p>
+      </section>
+
+      <section class="section" id="7-the-text-problem">
+        <h2><span class="num">7.</span> The Text Problem</h2>
+        <p>Neural networks are mathematical machines. They only understand numbers. But language is:</p>
+        <div class="code-block"><pre><code>"I love artificial intelligence"</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>This is not a number. We need a way to <strong>represent text as numbers</strong> while preserving meaning.</p>
+      </section>
+
+      <section class="section" id="8-one-hot-encoding">
+        <h2><span class="num">8.</span> One-Hot Encoding</h2>
+        <h3>How It Works</h3>
+        <ol>
+          <li>Build a <strong>vocabulary</strong> (list of all unique words)</li>
+          <li>Assign each word an index</li>
+          <li>Represent each word as a vector of all zeros, with a <code>1</code> at that word's index</li>
+        </ol>
+        <p><strong>Example:</strong> Vocabulary <code>["I", "love", "AI", "hate", "cats"]</code> → "I" = [1,0,0,0,0], "love" = [0,1,0,0,0], etc.</p>
+        <h3>Problems with One-Hot Encoding</h3>
+        <p><strong>Curse of Dimensionality:</strong> Real vocabularies are massive — each word vector can be 100,000 dimensions. <strong>No Semantic Meaning:</strong> The distance between "king" and "queen" is the same as "king" and "car". <strong>No Relationship Between Words:</strong> The model can't know that "big" and "large" mean similar things.</p>
+      </section>
+
+      <section class="section" id="9-word-embeddings">
+        <h2><span class="num">9.</span> Word Embeddings</h2>
+        <p>Instead of huge, sparse one-hot vectors, map each word to a <strong>small, dense vector</strong> that captures meaning. Semantically similar words end up <strong>close together</strong> in vector space.</p>
+        <h3>Famous Analogy: Word Arithmetic</h3>
+        <div class="code-block"><pre><code>king - man + woman ≈ queen
+Paris - France + Italy ≈ Rome
+walking - walk + swim ≈ swimming</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+        <p>The model has learned <strong>real semantic structure</strong> of language — without ever being explicitly taught grammar or word meanings.</p>
+      </section>
+
+      <section class="section" id="10-word2vec">
+        <h2><span class="num">10.</span> Word2Vec</h2>
+        <p>Word2Vec (2013, by Mikolov et al. at Google) is a simple <strong>neural network</strong> that learns word embeddings by training on a massive text corpus.</p>
+        <blockquote><p><strong>Words that appear in similar contexts have similar meanings.</strong></p></blockquote>
+        <h3>Two Training Approaches</h3>
+        <p><strong>CBOW — Continuous Bag of Words:</strong> Predict the target word from its surrounding context. <strong>Skip-Gram:</strong> Predict the surrounding context from a single word. Skip-gram tends to work better for rare words; CBOW is faster to train.</p>
+      </section>
+
+      <section class="section" id="11-word2vec-architecture">
+        <h2><span class="num">11.</span> Word2Vec Architecture</h2>
+        <p>Pipeline: Input word (One-Hot) → Embedding Matrix W (V×D) → Hidden vector h → Output Matrix W' → Softmax → Probability over all words.</p>
+        <p>The rows of <code>W</code> are the word embeddings we care about. Multiplying a one-hot vector by a matrix is equivalent to <strong>looking up a row</strong> — this is why embedding layers are implemented as efficient lookup tables.</p>
+      </section>
+
+      <section class="section" id="12-dot-product-similarity">
+        <h2><span class="num">12.</span> Dot Product Similarity</h2>
+        <p>The model computes similarity between hidden vector <code>h</code> and each output word vector using the <strong>dot product</strong>: <code>u_j = h · w'_j</code>. The dot product is large when two vectors point in the same direction. Softmax converts scores into a probability distribution over the vocabulary.</p>
+      </section>
+
+      <section class="section" id="13-distributional-hypothesis">
+        <h2><span class="num">13.</span> Distributional Hypothesis</h2>
+        <blockquote><p><strong>"You shall know a word by the company it keeps."</strong> — J.R. Firth, 1957</p></blockquote>
+        <p>Words that appear in <strong>similar contexts</strong> have <strong>similar meanings</strong>. After training on a large corpus, Word2Vec automatically discovers countries→capitals, gender relationships, verb tenses, and comparative adjectives — all from raw text.</p>
+      </section>
+
+      <section class="section" id="14-limitations-of-word2vec">
+        <h2><span class="num">14.</span> Limitations of Word2Vec</h2>
+        <p><strong>Static Representations (Polysemy):</strong> Each word gets one fixed vector — "bank" (financial vs river) gets the same vector. <strong>Rare Words Learn Poorly:</strong> Few gradient updates → weak embedding. <strong>Out-of-Vocabulary Words:</strong> Words not seen during training have no embedding. (Partially solved by FastText and BPE.)</p>
+      </section>
+
+      <section class="section" id="15-representing-sentences">
+        <h2><span class="num">15.</span> Representing Sentences with Word2Vec</h2>
+        <p><strong>Method 1 — Averaging:</strong> Sentence vector = mean of word vectors. Problem: loses word order ("Dog bites man" vs "Man bites dog" → same vector). <strong>Method 2 — Concatenation:</strong> Vector length depends on sentence length; networks need fixed-size inputs. Neither method captures word order, long-range dependencies, or dynamic context.</p>
+      </section>
+
+      <section class="section" id="16-the-road-ahead">
+        <h2><span class="num">16.</span> The Road Ahead — NLP Evolution Map</h2>
+        <p>Word2Vec (2013) → RNNs → LSTM/GRU → Attention (2015) → Transformer (2017) → BERT, GPT, T5 (2018+) → LLMs (2020s).</p>
+        <div class="table-wrap">
+          <table>
+            <thead><tr><th>Concept</th><th>What It Solves</th></tr></thead>
+            <tbody>
+              <tr><td>Linear Models</td><td>Basic prediction</td></tr>
+              <tr><td>Neural Networks</td><td>Non-linear patterns</td></tr>
+              <tr><td>Activation Functions</td><td>Preventing network collapse</td></tr>
+              <tr><td>Optimization / Backprop</td><td>How networks learn</td></tr>
+              <tr><td>Word Embeddings</td><td>Compact, meaningful text representation</td></tr>
+              <tr><td>Word2Vec (CBOW & Skip-gram)</td><td>Learning embeddings from context</td></tr>
+              <tr><td>Distributional Hypothesis</td><td>The "why" behind embeddings</td></tr>
+              <tr><td>Static Embedding Limitations</td><td>Motivation for contextual models</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <blockquote><p>These concepts are the <strong>DNA of every modern AI language model</strong>, including the one that may have helped write this document.</p></blockquote>
+      </section>
+
+      <!-- Related Papers -->
+      <section class="section papers-section" id="related-papers">
+        <h2><span class="num">—</span> Related Papers</h2>
+        <p class="section-title">Summaries, structure, and visuals for papers linked to this guide</p>
+
+        <article class="paper-card">
+          <div class="paper-header">
+            <h3 class="paper-title">Efficient Estimation of Word Representations in Vector Space</h3>
+            <div class="paper-meta">
+              <span>Mikolov et al.</span>
+              <span>2013</span>
+              <span>Google / ICLR</span>
+            </div>
+            <div class="paper-links">
+              <a href="assets/papers/1301.3781v3.pdf" target="_blank" rel="noopener">PDF</a>
+              <a href="https://arxiv.org/abs/1301.3781" target="_blank" rel="noopener">arXiv</a>
+              <a href="https://github.com/tmikolov/word2vec" target="_blank" rel="noopener">Code (GitHub)</a>
+            </div>
+          </div>
+
+          <div class="paper-block">
+            <h4>Summary</h4>
+            <p>The paper introduces two neural network architectures for learning distributed word representations from large text corpora: <strong>CBOW</strong> (Continuous Bag of Words), which predicts a target word from its context, and <strong>Skip-gram</strong>, which does the opposite—predicting context words from a single target word. Both produce dense, low-dimensional vectors that capture semantic similarity and linear analogies (e.g. <code>king − man + woman ≈ queen</code>). The models are trained efficiently without dense matrix multiplications by using a hierarchical softmax (and later, negative sampling). Experiments on word similarity and analogy tasks show large gains over previous count-based and neural approaches.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Key points</h4>
+            <ul>
+              <li><strong>Distributional hypothesis in practice:</strong> Words in similar contexts get similar vectors.</li>
+              <li><strong>CBOW:</strong> Input = sum/average of context word vectors → output = predicted center word (faster, good for frequent words).</li>
+              <li><strong>Skip-gram:</strong> Input = center word → output = predicted context words (better for rare words, often preferred).</li>
+              <li><strong>Hierarchical softmax:</strong> Replaces the full V-way softmax with a binary tree to reduce complexity from O(V) to O(log V).</li>
+              <li><strong>Linear structure:</strong> Word relations (e.g. gender, tense) appear as roughly linear offsets in vector space.</li>
+              <li><strong>Scale matters:</strong> Larger corpus and dimensions improve quality; 300–600 dimensions work well.</li>
+            </ul>
+          </div>
+
+          <div class="paper-block">
+            <h4>Structure</h4>
+            <ul class="paper-structure-list">
+              <li><span class="arrow">→</span> Abstract &amp; intro: motivation for dense representations</li>
+              <li><span class="arrow">→</span> Previous work: NNLM, RNNLM, latent representations</li>
+              <li><span class="arrow">→</span> New models: CBOW and Skip-gram objectives and training</li>
+              <li><span class="arrow">→</span> Complexity: comparison with NNLM, hierarchical softmax</li>
+              <li><span class="arrow">→</span> Experiments: similarity, analogy, NCE/negative sampling</li>
+              <li><span class="arrow">→</span> Conclusion: simple models, large data, linear structure</li>
+            </ul>
+          </div>
+
+          <div class="paper-block">
+            <h4>Visual — CBOW vs Skip-gram</h4>
+            <div class="two-diagrams">
+              <figure class="paper-visual-wrap">
+                <figcaption>CBOW: context → target word</figcaption>
+                <svg class="paper-diagram" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <marker id="arrow1" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><polygon class="arrowhead" points="0 0, 8 4, 0 8" /></marker>
+                  </defs>
+                  <text x="20" y="22" class="node">w(t−2)</text>
+                  <text x="20" y="52" class="node">w(t−1)</text>
+                  <text x="20" y="82" class="node">w(t+1)</text>
+                  <text x="20" y="112" class="node">w(t+2)</text>
+                  <path class="edge" d="M 45 30 L 95 65" marker-end="url(#arrow1)" />
+                  <path class="edge" d="M 45 60 L 95 65" marker-end="url(#arrow1)" />
+                  <path class="edge" d="M 45 90 L 95 65" marker-end="url(#arrow1)" />
+                  <path class="edge" d="M 45 120 L 95 65" marker-end="url(#arrow1)" />
+                  <rect x="100" y="50" width="80" height="30" rx="6" class="node node-center" />
+                  <text x="140" y="70" text-anchor="middle" class="node" fill="currentColor">SUM / avg</text>
+                  <path class="edge" d="M 180 65 L 220 65" marker-end="url(#arrow1)" />
+                  <text x="250" y="70" text-anchor="middle" class="node">w(t)</text>
+                </svg>
+              </figure>
+              <figure class="paper-visual-wrap">
+                <figcaption>Skip-gram: target word → context</figcaption>
+                <svg class="paper-diagram" viewBox="0 0 280 140" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                  <defs>
+                    <marker id="arrow2" markerWidth="8" markerHeight="8" refX="6" refY="4" orient="auto"><polygon class="arrowhead" points="0 0, 8 4, 0 8" /></marker>
+                  </defs>
+                  <text x="20" y="70" text-anchor="start" class="node">w(t)</text>
+                  <rect x="95" y="50" width="90" height="40" rx="6" class="node node-center" />
+                  <text x="140" y="75" text-anchor="middle" class="node" fill="currentColor">Projection</text>
+                  <path class="edge" d="M 55 70 L 95 70" marker-end="url(#arrow2)" />
+                  <path class="edge" d="M 185 55 L 225 35" marker-end="url(#arrow2)" />
+                  <path class="edge" d="M 185 70 L 225 70" marker-end="url(#arrow2)" />
+                  <path class="edge" d="M 185 85 L 225 105" marker-end="url(#arrow2)" />
+                  <text x="255" y="32" text-anchor="middle" class="node">w(t−2)</text>
+                  <text x="255" y="72" text-anchor="middle" class="node">w(t−1), w(t+1)</text>
+                  <text x="255" y="108" text-anchor="middle" class="node">w(t+2)</text>
+                </svg>
+              </figure>
+            </div>
+            <p style="margin-top:1rem; font-size:0.9rem; color: var(--text-muted);">Pipeline: One-hot → embedding matrix W (V×D) → hidden vector h → output matrix W′ → Softmax (or hierarchical softmax) → probability over vocabulary.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Try it: Gensim (Word2Vec in Python)</h4>
+            <p>Same algorithm as the paper; run in Python with a small corpus to see embeddings and similarity.</p>
+            <div class="code-block"><pre><code>from gensim.models import Word2Vec
+
+sentences = [
+    ["the", "cat", "sat", "on", "the", "mat", "."],
+    ["the", "dog", "sat", "on", "the", "mat", "."],
+    ["cats", "and", "dogs", "are", "animals", "."],
+    ["the", "cat", "and", "the", "dog", "played", "."],
+]
+model = Word2Vec(sentences, vector_size=8, window=2, min_count=1,
+                 sg=1, negative=3, epochs=5, alpha=0.025, seed=42)
+wv = model.wv
+print("Vocab size:", len(wv))
+print("Embedding for 'cat':", wv["cat"])
+print("Cosine sim(cat, dog):", wv.similarity("cat", "dog"))
+print("Most similar to 'cat':", wv.most_similar("cat", topn=3))</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+            <h4 style="margin-top:1rem;">Expected output (example)</h4>
+            <pre style="font-size:0.85rem; margin:0.5rem 0; background:var(--code-bg); color:var(--code-text); padding:1rem; border-radius:8px; overflow-x:auto;">Vocab size: 13
+Embedding for 'cat': [ 0.01 -0.09  0.06  0.05  0.11  0.06 -0.03  0.12 ]
+Embedding for 'dog': [ 0.07  0.04 -0.02  0.08  0.01 -0.01 -0.01 -0.07 ]
+Cosine sim(cat, dog): -0.26
+Most similar to 'cat': [('.', 0.69), ('and', 0.67), ('mat', 0.40)]</pre>
+            <h4>Explanation of the results</h4>
+            <ul>
+              <li><strong>Vocab size (13):</strong> Number of unique words in the corpus. With only 4 sentences, the vocabulary is small.</li>
+              <li><strong>Embedding for 'cat' / 'dog':</strong> Each word is a vector of 8 floats (vector_size=8). The model learned these numbers so that words in similar contexts end up with similar vectors.</li>
+              <li><strong>Cosine sim(cat, dog):</strong> Measures how “aligned” the two vectors are (−1 to 1). Here it can be negative or low because the corpus is tiny; with a large corpus, cat and dog usually get positive similarity (e.g. 0.5–0.8).</li>
+              <li><strong>Most similar to 'cat':</strong> Words whose vectors are closest to cat’s. On this tiny corpus you may see “.”, “and”, “mat” (same sentence context); on a large corpus you’d see “dog”, “kitten”, “animal”, etc.</li>
+            </ul>
+            <p style="font-size:0.9rem; color: var(--text-muted);">Full walkthrough and from-scratch implementation: see <code>word2vec_from_scratch.ipynb</code> in this project.</p>
+          </div>
+        </article>
+
+        <article class="paper-card">
+          <div class="paper-header">
+            <h3 class="paper-title">Distributed Representations of Words and Phrases and their Compositionality</h3>
+            <div class="paper-meta">
+              <span>Mikolov et al.</span>
+              <span>2013</span>
+              <span>Google / NeurIPS</span>
+            </div>
+            <div class="paper-links">
+              <a href="assets/papers/1310.4546v1.pdf" target="_blank" rel="noopener">PDF</a>
+              <a href="https://arxiv.org/abs/1310.4546" target="_blank" rel="noopener">arXiv</a>
+              <a href="https://github.com/tmikolov/word2vec" target="_blank" rel="noopener">Code (GitHub)</a>
+            </div>
+          </div>
+
+          <div class="paper-block">
+            <h4>Summary</h4>
+            <p>This follow-up extends the Skip-gram model from the first paper with three main ideas: <strong>negative sampling</strong> (train on a few random “negative” words instead of the full vocabulary, making training much faster), <strong>subsampling of frequent words</strong> (randomly drop very common words like “the” so they don’t dominate and rare words get more updates), and <strong>phrase representations</strong> (merge frequent bigrams into single tokens, e.g. “New_York”, so that multi-word expressions get their own vectors). The paper shows that Skip-gram with negative sampling outperforms hierarchical softmax on analogy tasks and that phrase-aware training improves compositionality and similarity.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Key points</h4>
+            <ul>
+              <li><strong>Negative sampling:</strong> For each (center, context) pair, maximize probability of the true context and minimize probability of k random “negative” words. Replaces full softmax with a simple binary classification; much faster and often better.</li>
+              <li><strong>Subsampling:</strong> Discard word w with probability <code>1 − √(t/f(w))</code> where f(w) is frequency; reduces dominance of “the”, “a”, etc. and improves quality for rare words.</li>
+              <li><strong>Phrases:</strong> Score bigrams by co-occurrence, merge top ones into single tokens (e.g. “ice_cream”), then train Skip-gram on the merged corpus so phrases get dedicated vectors.</li>
+              <li><strong>Additive compositionality:</strong> Word vectors can be added to approximate phrase/sentence meaning (e.g. vector(“Germany”) + vector(“capital”) ≈ vector(“Berlin”)); phrase training refines this.</li>
+            </ul>
+          </div>
+
+          <div class="paper-block">
+            <h4>Structure</h4>
+            <ul class="paper-structure-list">
+              <li><span class="arrow">→</span> Intro: extending Skip-gram for speed and quality</li>
+              <li><span class="arrow">→</span> Hierarchical softmax recap; negative sampling objective (NCE-style)</li>
+              <li><span class="arrow">→</span> Subsampling of frequent words (formula and effect)</li>
+              <li><span class="arrow">→</span> Learning phrase representations (bigram scoring, merging)</li>
+              <li><span class="arrow">→</span> Experiments: word similarity, analogy, phrase analogies</li>
+              <li><span class="arrow">→</span> Conclusion: negative sampling + subsampling + phrases = state-of-the-art at the time</li>
+            </ul>
+          </div>
+
+          <div class="paper-block">
+            <h4>Visual — Negative sampling vs full softmax</h4>
+            <p style="margin-bottom:0.75rem;">For each (center word, context word) pair: <strong>Full softmax</strong> normalizes over all V words (expensive). <strong>Negative sampling</strong> treats it as binary: one positive (true context) + k negatives (random words from a unigram table). Only k+1 outputs are updated per step.</p>
+            <pre style="font-size:0.85rem; margin:0; background:var(--code-bg); color:var(--code-text); padding:1rem; border-radius:8px;">Skip-gram step:  center = "cat", context = "sat"
+Positive pair: (cat, sat) → label 1
+Negatives (e.g. k=3): (cat, "the"), (cat, "matrix"), (cat, "run") → label 0
+Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre>
+          </div>
+        </article>
+
+        <div class="paper-card" style="border-left: 4px solid var(--accent);">
+          <h4 style="margin-top:0;">How the two papers connect</h4>
+          <p><strong>Paper 1 (Efficient Estimation)</strong> introduces the core idea: CBOW and Skip-gram over words, with hierarchical softmax for efficient training. You get one vector per word and linear analogies.</p>
+          <p><strong>Paper 2 (Phrases and Compositionality)</strong> builds directly on Skip-gram: same architecture, but (1) <strong>negative sampling</strong> replaces hierarchical softmax for faster and often better training, (2) <strong>subsampling</strong> balances the effect of frequent vs rare words, and (3) <strong>phrases</strong> get their own tokens and vectors so multi-word expressions (“New_York”, “ice_cream”) are represented properly.</p>
+          <p>Together they define the standard Word2Vec pipeline: train Skip-gram (or CBOW) with negative sampling and optional subsampling on a word-level or phrase-merged corpus to obtain dense vectors that capture similarity and compositionality. The code in <code>word2vec.c</code> implements both papers (HS + negative sampling, and <code>word2phrase</code> for phrases). Reading Paper 1 first gives you the objective and the tree; Paper 2 gives you the tricks that make it scale and the phrase extension.</p>
+        </div>
+      </section>
+
+      <p class="footer-note">Summary compiled from foundational ML/NLP concepts. Topics continue with: RNNs → LSTMs → Attention → Transformers → LLMs.</p>
+    </main>
+    <div></div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

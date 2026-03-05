@@ -1,0 +1,11 @@
+# Netlify config for ML/NLP Guide static site
+# Publish the repo root (html, css, js)
+[build]
+  publish = "."
+  command = ""   # no build step
+
+# So visiting the site root shows the guide
+[[redirects]]
+  from = "/"
+  to = "/ml-nlp-guide.html"
+  status = 200
