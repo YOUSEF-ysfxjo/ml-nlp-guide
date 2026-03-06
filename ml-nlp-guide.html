@@ -324,20 +324,23 @@ walking - walk + swim ≈ swimming</code></pre><button class="copy-btn" data-cop
           </div>
 
           <div class="paper-block">
-            <h4>Summary</h4>
-            <p>The paper introduces two neural network architectures for learning distributed word representations from large text corpora: <strong>CBOW</strong> (Continuous Bag of Words), which predicts a target word from its context, and <strong>Skip-gram</strong>, which does the opposite—predicting context words from a single target word. Both produce dense, low-dimensional vectors that capture semantic similarity and linear analogies (e.g. <code>king − man + woman ≈ queen</code>). The models are trained efficiently without dense matrix multiplications by using a hierarchical softmax (and later, negative sampling). Experiments on word similarity and analogy tasks show large gains over previous count-based and neural approaches.</p>
+            <h4>Core idea</h4>
+            <p>Learn dense, low-dimensional word vectors by <strong>predicting words from context</strong>. Two architectures: <strong>CBOW</strong> (predict the center word from surrounding words) and <strong>Skip-gram</strong> (predict context from the center word). Meaning is captured implicitly: words in similar contexts get similar vectors, and relations like <code>king − man + woman ≈ queen</code> emerge in vector space. Training uses hierarchical softmax to avoid expensive full softmax over the whole vocabulary.</p>
           </div>
 
           <div class="paper-block">
-            <h4>Key points</h4>
-            <ul>
-              <li><strong>Distributional hypothesis in practice:</strong> Words in similar contexts get similar vectors.</li>
-              <li><strong>CBOW:</strong> Input = sum/average of context word vectors → output = predicted center word (faster, good for frequent words).</li>
-              <li><strong>Skip-gram:</strong> Input = center word → output = predicted context words (better for rare words, often preferred).</li>
-              <li><strong>Hierarchical softmax:</strong> Replaces the full V-way softmax with a binary tree to reduce complexity from O(V) to O(log V).</li>
-              <li><strong>Linear structure:</strong> Word relations (e.g. gender, tense) appear as roughly linear offsets in vector space.</li>
-              <li><strong>Scale matters:</strong> Larger corpus and dimensions improve quality; 300–600 dimensions work well.</li>
-            </ul>
+            <h4>Problem it addresses</h4>
+            <p>One-hot and count-based representations are huge, sparse, and do not capture semantic similarity. We need a compact representation where similar words are close and where the model can generalize from co-occurrence patterns.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What it solves</h4>
+            <p>Distributed word embeddings that capture <strong>semantic similarity</strong> and linear analogies; efficient training via hierarchical softmax (O(log V) instead of O(V)); strong results on word similarity and analogy benchmarks. Scale (large corpus, 300–600 dimensions) is key to quality.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What remains</h4>
+            <p>One vector per word → no handling of polysemy (“bank” has one vector). Rare words get few updates and weak embeddings. Out-of-vocabulary words have no vector. Word order is ignored (context is a bag). These are addressed later by GloVe (global statistics), FastText (subwords), and contextual models.</p>
           </div>
 
           <div class="paper-block">
@@ -448,18 +451,23 @@ Most similar to 'cat': [('.', 0.69), ('and', 0.67), ('mat', 0.40)]</pre>
           </div>
 
           <div class="paper-block">
-            <h4>Summary</h4>
-            <p>This follow-up extends the Skip-gram model from the first paper with three main ideas: <strong>negative sampling</strong> (train on a few random “negative” words instead of the full vocabulary, making training much faster), <strong>subsampling of frequent words</strong> (randomly drop very common words like “the” so they don’t dominate and rare words get more updates), and <strong>phrase representations</strong> (merge frequent bigrams into single tokens, e.g. “New_York”, so that multi-word expressions get their own vectors). The paper shows that Skip-gram with negative sampling outperforms hierarchical softmax on analogy tasks and that phrase-aware training improves compositionality and similarity.</p>
+            <h4>Core idea</h4>
+            <p>Same Skip-gram objective as Paper 1, but with three changes: <strong>negative sampling</strong> (train on one positive + k random negatives instead of full softmax), <strong>subsampling</strong> of very frequent words so rare words get more updates, and <strong>phrase tokens</strong> (merge frequent bigrams like “New_York” into single units so multi-word expressions get their own vectors).</p>
           </div>
 
           <div class="paper-block">
-            <h4>Key points</h4>
-            <ul>
-              <li><strong>Negative sampling:</strong> For each (center, context) pair, maximize probability of the true context and minimize probability of k random “negative” words. Replaces full softmax with a simple binary classification; much faster and often better.</li>
-              <li><strong>Subsampling:</strong> Discard word w with probability <code>1 − √(t/f(w))</code> where f(w) is frequency; reduces dominance of “the”, “a”, etc. and improves quality for rare words.</li>
-              <li><strong>Phrases:</strong> Score bigrams by co-occurrence, merge top ones into single tokens (e.g. “ice_cream”), then train Skip-gram on the merged corpus so phrases get dedicated vectors.</li>
-              <li><strong>Additive compositionality:</strong> Word vectors can be added to approximate phrase/sentence meaning (e.g. vector(“Germany”) + vector(“capital”) ≈ vector(“Berlin”)); phrase training refines this.</li>
-            </ul>
+            <h4>Problem it addresses</h4>
+            <p>Hierarchical softmax is still costly; very frequent words (“the”, “a”) dominate training; and multi-word expressions (“ice_cream”, “New_York”) are not naturally represented as single meaning units.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What it solves</h4>
+            <p>Faster and often better training via negative sampling; better balance for rare words via subsampling; phrase-level vectors for common expressions and improved compositionality (e.g. vector(“Germany”) + vector(“capital”) ≈ vector(“Berlin”)).</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What remains</h4>
+            <p>Still one vector per (word or phrase) token; rare and OOV words are not addressed. Word order and full sentence structure are still ignored. GloVe and FastText attack different aspects (global statistics, subwords).</p>
           </div>
 
           <div class="paper-block">
@@ -485,10 +493,110 @@ Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre
         </article>
 
         <div class="paper-card" style="border-left: 4px solid var(--accent);">
-          <h4 style="margin-top:0;">How the two papers connect</h4>
-          <p><strong>Paper 1 (Efficient Estimation)</strong> introduces the core idea: CBOW and Skip-gram over words, with hierarchical softmax for efficient training. You get one vector per word and linear analogies.</p>
-          <p><strong>Paper 2 (Phrases and Compositionality)</strong> builds directly on Skip-gram: same architecture, but (1) <strong>negative sampling</strong> replaces hierarchical softmax for faster and often better training, (2) <strong>subsampling</strong> balances the effect of frequent vs rare words, and (3) <strong>phrases</strong> get their own tokens and vectors so multi-word expressions (“New_York”, “ice_cream”) are represented properly.</p>
-          <p>Together they define the standard Word2Vec pipeline: train Skip-gram (or CBOW) with negative sampling and optional subsampling on a word-level or phrase-merged corpus to obtain dense vectors that capture similarity and compositionality. The code in <code>word2vec.c</code> implements both papers (HS + negative sampling, and <code>word2phrase</code> for phrases). Reading Paper 1 first gives you the objective and the tree; Paper 2 gives you the tricks that make it scale and the phrase extension.</p>
+          <h4 style="margin-top:0;">How the two Word2Vec papers connect</h4>
+          <p>Paper 1 introduces CBOW and Skip-gram with hierarchical softmax. Paper 2 keeps the same objective but adds negative sampling, subsampling, and phrase tokens. Together they define the standard Word2Vec pipeline; <code>word2vec.c</code> implements both.</p>
+        </div>
+
+        <article class="paper-card">
+          <div class="paper-header">
+            <h3 class="paper-title">GloVe: Global Vectors for Word Representation</h3>
+            <div class="paper-meta">
+              <span>Pennington et al.</span>
+              <span>2014</span>
+              <span>Stanford / EMNLP</span>
+            </div>
+            <div class="paper-links">
+              <a href="https://arxiv.org/abs/1412.3555" target="_blank" rel="noopener">arXiv</a>
+              <a href="https://github.com/stanfordnlp/GloVe" target="_blank" rel="noopener">Code (GitHub)</a>
+            </div>
+          </div>
+
+          <div class="paper-block">
+            <h4>Core idea</h4>
+            <p>Learn word vectors from <strong>global word–word co-occurrence statistics</strong> of the whole corpus. Build a co-occurrence matrix (how often words appear near each other), then fit vectors so that dot products approximate <strong>log co-occurrence ratios</strong>. Meaning is encoded in these ratios—e.g. “ice” vs “steam” differ by which context words (solid, gas, water) co-occur with them.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Problem it addresses</h4>
+            <p>Word2Vec learns from many local prediction events; the statistical reason behind the learned vector relationships was not explicitly modeled. GloVe asks: can we use <strong>global</strong> corpus statistics and give a clearer interpretation of why embeddings capture meaning?</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What it solves</h4>
+            <p>A more explicit statistical view: vectors are trained so that <code>w_i^T w_j + b_i + b_j ≈ log X_ij</code> (co-occurrence count). Often better on analogy and similarity tasks; training uses only non-zero co-occurrence entries. Complements Word2Vec with a count-based + prediction hybrid.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What remains</h4>
+            <p>Still relies on context windows, so word order and full sequential structure are not modeled. Rare and OOV words are not specially handled. FastText addresses OOV/morphology; contextual models (Phase B/C) address context sensitivity.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Structure</h4>
+            <ul class="paper-structure-list">
+              <li><span class="arrow">→</span> Motivation: limits of local prediction (Word2Vec)</li>
+              <li><span class="arrow">→</span> Co-occurrence matrix and the ratio intuition</li>
+              <li><span class="arrow">→</span> Objective (weighted least squares on log co-occurrence)</li>
+              <li><span class="arrow">→</span> Training and experiments (analogy, similarity)</li>
+            </ul>
+          </div>
+        </article>
+
+        <article class="paper-card">
+          <div class="paper-header">
+            <h3 class="paper-title">Enriching Word Vectors with Subword Information</h3>
+            <div class="paper-meta">
+              <span>Bojanowski et al.</span>
+              <span>2017</span>
+              <span>Facebook AI / ACL (FastText)</span>
+            </div>
+            <div class="paper-links">
+              <a href="https://arxiv.org/abs/1607.04606" target="_blank" rel="noopener">arXiv</a>
+              <a href="https://github.com/facebookresearch/fastText" target="_blank" rel="noopener">Code (GitHub)</a>
+            </div>
+          </div>
+
+          <div class="paper-block">
+            <h4>Core idea</h4>
+            <p>Words are not atomic: represent each word as the <strong>sum of its character n-gram vectors</strong>. E.g. “playing” → <code>&lt;pl</code>, <code>pla</code>, <code>lay</code>, … each with a vector; word vector = sum of these. Same training objective as Word2Vec (Skip-gram or CBOW), but the word representation is built from subword units.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Problem it addresses</h4>
+            <p>Word2Vec and GloVe assign one vector per word. Rare words get few updates; <strong>out-of-vocabulary (OOV)</strong> words have no vector at all. Morphologically rich languages (e.g. Arabic) have many word forms that share roots—treating each form as a separate token wastes signal.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What it solves</h4>
+            <p>Vectors for <strong>rare and unseen words</strong> by composing n-gram vectors. Morphology is captured (run, running, runner share subwords). At test time, a new word like “unhappiness” gets a vector from its character n-grams even if never seen in training.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>What remains</h4>
+            <p>Still one representation per word (the sum of n-grams)—no context sensitivity. “Bank” (financial vs river) has one vector. Next step: contextual representations (Phase B/C) where the same word gets different vectors in different sentences.</p>
+          </div>
+
+          <div class="paper-block">
+            <h4>Structure</h4>
+            <ul class="paper-structure-list">
+              <li><span class="arrow">→</span> Limits of word-level embeddings (rare words, OOV)</li>
+              <li><span class="arrow">→</span> Subword model: character n-grams, boundary symbols</li>
+              <li><span class="arrow">→</span> Skip-gram with subword representation; hashing</li>
+              <li><span class="arrow">→</span> Experiments: similarity, analogy, morphology</li>
+            </ul>
+          </div>
+
+          <div class="paper-block">
+            <h4>Comparison</h4>
+            <p><strong>Word2Vec</strong> → semantic similarity (local prediction). <strong>GloVe</strong> → statistical structure (global co-occurrence). <strong>FastText</strong> → morphological structure (subwords). Together they form the first generation of word embeddings.</p>
+          </div>
+        </article>
+
+        <div class="paper-card" style="border-left: 4px solid var(--accent);">
+          <h4 style="margin-top:0;">Phase A — Brief summary</h4>
+          <p>Phase A covered <strong>word-level embeddings</strong>: one (or one composition of) vector per word type. Word2Vec (CBOW, Skip-gram, negative sampling, phrases) learns from local prediction; GloVe from global co-occurrence; FastText from subword n-grams. We get similarity, analogies, and OOV handling, but still no context sensitivity—the same word has the same vector everywhere.</p>
+          <h4 style="margin-top:1.25rem;">Introduction to the next phase</h4>
+          <p>The next step is <strong>contextual representations</strong>: the same word gets different vectors depending on the sentence (e.g. “bank” in “river bank” vs “bank account”). That leads to RNNs, LSTMs, and then attention and transformers—where the representation of each token is a function of the full context. Phase B/C will focus on that transition: from static word embeddings to contextual encoders and modern sentence/document embedders.</p>
         </div>
       </section>
 

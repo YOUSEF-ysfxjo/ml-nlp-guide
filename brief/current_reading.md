@@ -1,8 +1,8 @@
 # أين أنت الآن — حدّث هذا الملف
 
-phase: Phase A
-paper: Efficient Estimation of Word Representations (Word2Vec) — Mikolov et al., 2013
-section: Phase A — word-level embeddings
+phase: Phase A (complete)
+paper: GloVe + FastText read. Phase A — word-level embeddings done.
+section: Phase A — word-level embeddings (all four papers: Word2Vec 1 & 2, GloVe, FastText)
 
 ---
-(الـ agent يقرأ من هنا ليحدد "قراءة اليوم". غيّر phase و paper و section حسب تقدمك.)
+(الـ agent يقرأ من هنا ليحدد "قراءة اليوم". Next: Phase B/C — contextual representations, RNNs, attention, transformers.)
