@@ -21,8 +21,9 @@ class LLMRunner:
     def _get_client(self):
         if self._client is not None:
             return self._client
-        # قراءة المفتاح عند الاستخدام (للتوافق مع GitHub Actions و env)
-        key = (self.api_key or os.environ.get("OPENAI_API_KEY", "")).strip()
+        # الأولوية لـ env (GitHub Actions) ثم لـ self.api_key
+        key = os.environ.get("OPENAI_API_KEY") or self.api_key
+        key = (key or "").strip()
         if not key:
             raise RuntimeError(
                 "مفتاح OpenAI مطلوب. ضع OPENAI_API_KEY في .env أو في التكوين (guide.openai_api_key)."
@@ -54,4 +55,4 @@ class LLMRunner:
 
     @property
     def is_available(self) -> bool:
-        return bool(self.api_key)
+        return bool(os.environ.get("OPENAI_API_KEY") or self.api_key)
