@@ -506,6 +506,7 @@ Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre
               <span>Stanford / EMNLP</span>
             </div>
             <div class="paper-links">
+              <a href="https://arxiv.org/pdf/1412.3555" target="_blank" rel="noopener">PDF</a>
               <a href="https://arxiv.org/abs/1412.3555" target="_blank" rel="noopener">arXiv</a>
               <a href="https://github.com/stanfordnlp/GloVe" target="_blank" rel="noopener">Code (GitHub)</a>
             </div>
@@ -540,6 +541,28 @@ Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre
               <li><span class="arrow">→</span> Training and experiments (analogy, similarity)</li>
             </ul>
           </div>
+
+          <div class="paper-block">
+            <h4>Visual — Co-occurrence ratios encode meaning</h4>
+            <p>Compare <strong>ice</strong> vs <strong>steam</strong>: which words co-occur with each? The important signal is the <strong>ratio</strong> of co-occurrence probabilities (e.g. P(solid|ice) / P(solid|steam) vs P(gas|ice) / P(gas|steam)). GloVe fits vectors so that such ratios are captured in the embedding space.</p>
+            <pre style="font-size:0.85rem; margin:0.5rem 0; background:var(--code-bg); color:var(--code-text); padding:1rem; border-radius:8px;">ice    → co-occurs with: solid, water, cold, ...
+steam  → co-occurs with: gas, water, hot, ...
+water  → co-occurs with both
+Ratio P(solid|ice)/P(solid|steam) is large; P(gas|ice)/P(gas|steam) is small.
+GloVe: w_ice^T w_solid + ... ≈ log X_ice,solid  (and similarly for ratios).</pre>
+          </div>
+
+          <div class="paper-block">
+            <h4>Try it: GloVe with Gensim</h4>
+            <p>Gensim can train GloVe-style models via <code>gensim.models.word2vec</code> with a co-occurrence-based pipeline, or use the <code>glove-python</code> package. Example with a small corpus:</p>
+            <div class="code-block"><pre><code># Install: pip install glove-python (or use Gensim's Word2Vec for comparison)
+from gensim.models import Word2Vec  # GloVe: use co-occurrence matrix then train
+
+# Minimal idea: build co-occurrence from corpus, then fit GloVe objective.
+# Full GloVe training: see https://github.com/stanfordnlp/GloVe
+# Quick alternative: compare Word2Vec vs pre-trained GloVe vectors from Stanford.</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+            <p style="font-size:0.9rem; color: var(--text-muted);">For a full run, clone <a href="https://github.com/stanfordnlp/GloVe" target="_blank" rel="noopener">Stanford GloVe</a>, build the co-occurrence matrix with <code>vocab_count</code> and <code>cooccur</code>, then train with <code>glove</code>.</p>
+          </div>
         </article>
 
         <article class="paper-card">
@@ -551,6 +574,7 @@ Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre
               <span>Facebook AI / ACL (FastText)</span>
             </div>
             <div class="paper-links">
+              <a href="https://arxiv.org/pdf/1607.04606" target="_blank" rel="noopener">PDF</a>
               <a href="https://arxiv.org/abs/1607.04606" target="_blank" rel="noopener">arXiv</a>
               <a href="https://github.com/facebookresearch/fastText" target="_blank" rel="noopener">Code (GitHub)</a>
             </div>
@@ -587,16 +611,59 @@ Update: maximize P(sat|cat), minimize P(the|cat), P(matrix|cat), P(run|cat)</pre
           </div>
 
           <div class="paper-block">
+            <h4>Visual — Word = sum of subword vectors</h4>
+            <p>Word2Vec: <code>word → one vector</code>. FastText: <code>word → set of character n-grams → sum of their vectors</code>. Example for “playing”:</p>
+            <pre style="font-size:0.85rem; margin:0.5rem 0; background:var(--code-bg); color:var(--code-text); padding:1rem; border-radius:8px;">playing  →  n-grams: &lt;pl, pla, lay, ayi, yin, ing, ng&gt;
+vector(playing) = vector(&lt;pl) + vector(pla) + vector(lay) + ...
+So: play, player, playing, played  share subwords → related vectors.
+OOV "unhappiness" → vector from &lt;un, unh, hap, app, ...  even if never seen.</pre>
+          </div>
+
+          <div class="paper-block">
+            <h4>Try it: FastText with Gensim</h4>
+            <p>Same API as Word2Vec; use <code>FastText</code> instead. Subwords are built automatically; you get vectors for unseen words.</p>
+            <div class="code-block"><pre><code>from gensim.models import FastText
+
+sentences = [
+    ["the", "cat", "sat", "on", "the", "mat", "."],
+    ["the", "dog", "sat", "on", "the", "mat", "."],
+    ["cats", "and", "dogs", "are", "animals", "."],
+    ["the", "cat", "and", "the", "dog", "played", "."],
+]
+model = FastText(sentences, vector_size=8, window=2, min_count=1,
+                 sg=1, min_n=2, max_n=4, epochs=5, seed=42)
+wv = model.wv
+print("Vocab size:", len(wv))
+# Unseen word: still get a vector (sum of its character n-grams)
+print("Embedding for 'cat':", wv["cat"])
+print("Embedding for OOV 'catt':", wv["catt"])  # similar to 'cat'
+print("Most similar to 'cat':", wv.most_similar("cat", topn=3))</code></pre><button class="copy-btn" data-copy>Copy</button></div>
+            <p style="font-size:0.9rem; color: var(--text-muted);">FastText uses <code>min_n</code>, <code>max_n</code> for character n-gram range. Words not in the training vocab still get vectors via their subwords.</p>
+          </div>
+
+          <div class="paper-block">
             <h4>Comparison</h4>
             <p><strong>Word2Vec</strong> → semantic similarity (local prediction). <strong>GloVe</strong> → statistical structure (global co-occurrence). <strong>FastText</strong> → morphological structure (subwords). Together they form the first generation of word embeddings.</p>
           </div>
         </article>
 
         <div class="paper-card" style="border-left: 4px solid var(--accent);">
-          <h4 style="margin-top:0;">Phase A — Brief summary</h4>
-          <p>Phase A covered <strong>word-level embeddings</strong>: one (or one composition of) vector per word type. Word2Vec (CBOW, Skip-gram, negative sampling, phrases) learns from local prediction; GloVe from global co-occurrence; FastText from subword n-grams. We get similarity, analogies, and OOV handling, but still no context sensitivity—the same word has the same vector everywhere.</p>
-          <h4 style="margin-top:1.25rem;">Introduction to the next phase</h4>
-          <p>The next step is <strong>contextual representations</strong>: the same word gets different vectors depending on the sentence (e.g. “bank” in “river bank” vs “bank account”). That leads to RNNs, LSTMs, and then attention and transformers—where the representation of each token is a function of the full context. Phase B/C will focus on that transition: from static word embeddings to contextual encoders and modern sentence/document embedders.</p>
+          <h3 style="margin-top:0;">Brief summary of the papers</h3>
+          <ul style="margin-bottom:1.25rem;">
+            <li><strong>Word2Vec (Paper 1):</strong> CBOW and Skip-gram learn dense word vectors by predicting context; hierarchical softmax makes training efficient. One vector per word; semantic similarity and linear analogies emerge.</li>
+            <li><strong>Word2Vec (Paper 2):</strong> Negative sampling and subsampling speed up training and balance rare vs frequent words; phrase tokens (e.g. “New_York”) give multi-word expressions their own vectors. Same pipeline, better scale and compositionality.</li>
+            <li><strong>GloVe:</strong> Builds a global word–word co-occurrence matrix and fits vectors so that dot products approximate log co-occurrence ratios. Meaning is explicitly tied to corpus statistics; often stronger on analogy/similarity. Does not fix word order or OOV.</li>
+            <li><strong>FastText:</strong> Represents each word as the sum of its character n-gram vectors. Same Skip-gram/CBOW objective, but subword structure gives vectors for rare and unseen words and captures morphology. Does not fix context sensitivity.</li>
+          </ul>
+
+          <h3 style="margin-top:1.5rem;">Phase A (Phase 1) — Summary in detail</h3>
+          <p><strong>What Phase A covered:</strong> The first generation of <strong>word-level embeddings</strong>: each word (or phrase) has one fixed vector, learned from large text corpora. We moved from one-hot and count-based representations to dense, low-dimensional vectors that capture similarity, analogies, and (with FastText) morphology and OOV.</p>
+          <p><strong>Problem → solution chain:</strong> (1) One-hot is huge and has no semantics → Word2Vec learns from local prediction (CBOW/Skip-gram). (2) Full softmax is expensive → hierarchical softmax, then negative sampling. (3) No clear statistical story → GloVe uses global co-occurrence and ratios. (4) Rare and OOV words fail → FastText uses character n-grams so that word vector = sum of subword vectors.</p>
+          <p><strong>What we can do now:</strong> Train or use pre-trained Word2Vec, GloVe, or FastText; get similarity, analogies, and (with FastText) embeddings for unseen words; combine word vectors (e.g. average) for sentences. These embeddings are the base for many downstream tasks and for understanding the next step: context-sensitive representations.</p>
+          <p><strong>What remains unsolved in Phase A:</strong> The same word always has the same vector—no sensitivity to context (“bank” in “river bank” vs “bank account”). Word order is not modeled. Polysemy is not handled. The next phase addresses these by making the representation of each token depend on the full sentence or document.</p>
+
+          <h3 style="margin-top:1.5rem;">Lead-in to the next phase</h3>
+          <p>The natural next step is <strong>contextual representations</strong>: the same word gets different vectors in different contexts. That requires models that read the whole sentence or sequence—recurrent networks (RNNs, LSTMs), then attention and transformers. In Phase B/C we move from <em>one vector per word type</em> to <em>one vector per token in context</em>, and from word embeddings to sentence and document encoders. That is the bridge to modern NLP: BERT, sentence embeddings, RAG, and LLMs.</p>
         </div>
       </section>
 
