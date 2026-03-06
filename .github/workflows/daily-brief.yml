@@ -1,0 +1,34 @@
+# تشغيل الدليل اليومي كل يوم 8 صباحاً بتوقيت السعودية (5:00 UTC)
+# لا يحتاج جهازك أن يكون مفتوحاً — يعمل على سيرفرات GitHub مجاناً
+name: Daily Brief 8am KSA
+
+on:
+  schedule:
+    # يومياً الساعة 5:00 UTC = 8:00 ص توقيت السعودية
+    - cron: '0 5 * * *'
+  workflow_dispatch:  # تشغيل يدوي من تبويب Actions في GitHub
+
+jobs:
+  run-brief:
+    runs-on: ubuntu-latest
+    steps:
+      - name: استلام الكود
+        uses: actions/checkout@v4
+
+      - name: إعداد Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: تثبيت المتطلبات
+        run: |
+          pip install -r daily-brief/requirements.txt
+
+      - name: تشغيل الدليل وإرسال الإيميل
+        env:
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
+          EMAIL_SENDER: ${{ secrets.EMAIL_SENDER }}
+          EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
+          EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
+        run: |
+          cd daily-brief && python run_brief.py

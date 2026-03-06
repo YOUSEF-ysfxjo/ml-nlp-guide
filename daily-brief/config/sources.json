@@ -1,0 +1,52 @@
+{
+  "new_ara_root": "..",
+  "guide": {
+    "model": "gpt-4o-mini",
+    "openai_api_key": ""
+  },
+  "email": {
+    "enabled": false
+  },
+  "context_files": [
+    "GOAL_AND_APPROACH.md",
+    "ML_NLP_Paper_Reading_Guide.md",
+    "brief/current_reading.md",
+    "PLAN_RESOURCES_AND_ROADMAP.md",
+    "ml-nlp-guide.html"
+  ],
+  "sources": {
+    "new_ara_context": { "enabled": true },
+    "reading_plan": {
+      "enabled": true,
+      "path_guide": "ML_NLP_Paper_Reading_Guide.md",
+      "path_current": "brief/current_reading.md"
+    },
+    "latest_updates": {
+      "enabled": true,
+      "max_items": 8,
+      "arxiv_category": "cs.CL"
+    },
+    "hf_trending": {
+      "enabled": true,
+      "max_items": 5
+    },
+    "rss": {
+      "enabled": true,
+      "feeds": [
+        { "name": "Chip Huyen", "url": "https://huyenchip.com/feed.xml", "max_items": 2 },
+        { "name": "Simon Willison", "url": "https://simonwillison.net/atom.xml", "max_items": 2 }
+      ]
+    },
+    "static_links": {
+      "enabled": true,
+      "label": "مراجع ومصادر",
+      "links": [
+        { "title": "PLAN_RESOURCES", "url": "PLAN_RESOURCES_AND_ROADMAP.md" },
+        { "title": "Papers With Code", "url": "https://paperswithcode.com" },
+        { "title": "MLOps Community (Gatewaze)", "url": "https://gatewaze.mlops.community/" },
+        { "title": "Hugging Face Trending Papers", "url": "https://huggingface.co/papers/trending" },
+        { "title": "Good AI List (Chip Huyen)", "url": "https://goodailist.com/" }
+      ]
+    }
+  }
+}

@@ -1,0 +1,44 @@
+# Daily Brief — التكوين
+# الأساس: مجلد New_ara (مرجع الـ agent)
+new_ara_root: ".."
+
+# الملفات التي يقرأها الـ agent من New_ara لتحديد السياق
+context_files:
+  - "GOAL_AND_APPROACH.md"
+  - "ML_NLP_Paper_Reading_Guide.md"
+  - "brief/current_reading.md"
+  - "PLAN_RESOURCES_AND_ROADMAP.md"
+
+sources:
+  new_ara_context:
+    enabled: true
+
+  reading_plan:
+    enabled: true
+    path_guide: "ML_NLP_Paper_Reading_Guide.md"
+    path_current: "brief/current_reading.md"
+
+  latest_updates:
+    enabled: true
+    max_items: 5
+    # arXiv cs.CL (NLP) كأحدث أوراق
+    arxiv_category: "cs.CL"
+
+  rss:
+    enabled: true
+    feeds:
+      - name: "Chip Huyen"
+        url: "https://huyenchip.com/feed.xml"
+        max_items: 1
+      - name: "Simon Willison"
+        url: "https://simonwillison.net/atom.xml"
+        max_items: 1
+
+  static_links:
+    enabled: true
+    label: "مراجع سريعة"
+    links:
+      - title: "PLAN_RESOURCES"
+        url: "PLAN_RESOURCES_AND_ROADMAP.md"
+      - title: "Papers With Code"
+        url: "https://paperswithcode.com"
