@@ -21,13 +21,15 @@ class LLMRunner:
     def _get_client(self):
         if self._client is not None:
             return self._client
-        if not self.api_key:
+        # قراءة المفتاح عند الاستخدام (للتوافق مع GitHub Actions و env)
+        key = (self.api_key or os.environ.get("OPENAI_API_KEY", "")).strip()
+        if not key:
             raise RuntimeError(
                 "مفتاح OpenAI مطلوب. ضع OPENAI_API_KEY في .env أو في التكوين (guide.openai_api_key)."
             )
         try:
             from openai import OpenAI
-            self._client = OpenAI(api_key=self.api_key)
+            self._client = OpenAI(api_key=key)
             return self._client
         except ImportError:
             raise RuntimeError("ثبّت openai: pip install openai")

@@ -31,4 +31,6 @@ jobs:
           EMAIL_PASSWORD: ${{ secrets.EMAIL_PASSWORD }}
           EMAIL_RECIPIENT: ${{ secrets.EMAIL_RECIPIENT }}
         run: |
-          cd daily-brief && python run_brief.py
+          cd daily-brief
+          python -c "import os; assert os.environ.get('OPENAI_API_KEY'), 'OPENAI_API_KEY غير موجود في البيئة'"
+          python run_brief.py

@@ -20,3 +20,6 @@ __pycache__/
 
 # ملفات كبيرة (تجاوز حد GitHub ~50 MB)
 MLOps-Community-GPU-Guide.pdf
+
+# مجلد فرعي كان ريبو (تجنب خطأ submodule)
+word2vec/

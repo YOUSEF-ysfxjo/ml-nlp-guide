@@ -45,7 +45,7 @@ def run(config_path: Path, output_dir: Path, new_ara_root: Path) -> str:
 
     # 3) وكيل الدليل — LLM يولد الدليل الشامل (مطلوب)
     guide_cfg = config.get("guide", {})
-    api_key = guide_cfg.get("openai_api_key") or os.environ.get("OPENAI_API_KEY", "")
+    api_key = (guide_cfg.get("openai_api_key") or "").strip() or os.environ.get("OPENAI_API_KEY", "")
     model = guide_cfg.get("model", "gpt-4o-mini")
     llm = LLMRunner(api_key=api_key, model=model)
     guide_agent = GuideAgent(llm)
