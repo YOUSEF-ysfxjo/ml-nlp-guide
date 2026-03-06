@@ -8,26 +8,28 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent
 sys.path.insert(0, str(ROOT))
 
-# تحميل المتغيرات من .env أو .env.example
+# تحميل المتغيرات من .env أو .env.example (بدون استبدال القيم الموجودة — مهم لـ GitHub Actions)
 def _load_env():
+    import os
     try:
         from dotenv import load_dotenv
         for f in (ROOT / ".env.example", ROOT / ".env"):
             if f.exists():
-                load_dotenv(f, override=True)
+                load_dotenv(f, override=False)
                 return
     except Exception:
         pass
-    # احتياطي: قراءة يدوية
+    # احتياطي: قراءة يدوية — لا نستبدل متغيراً موجوداً في البيئة
     for name in (".env", ".env.example"):
         f = ROOT / name
         if f.exists():
-            import os
             for line in f.read_text(encoding="utf-8").splitlines():
                 line = line.strip()
                 if line and not line.startswith("#") and "=" in line:
                     k, _, v = line.partition("=")
-                    os.environ[k.strip()] = v.strip()
+                    key = k.strip()
+                    if key not in os.environ:
+                        os.environ[key] = v.strip()
             return
 _load_env()
 
