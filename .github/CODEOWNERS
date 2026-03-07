@@ -1,0 +1,16 @@
+# CODEOWNERS
+# Each line is a file pattern followed by one or more owners.
+# Owners are notified whenever someone opens a PR that modifies matching files.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owner for everything in the repo
+* @YOUSEF-ysfxjo
+
+# Daily-brief automation
+daily-brief/ @YOUSEF-ysfxjo
+
+# Notebooks
+*.ipynb @YOUSEF-ysfxjo
+
+# CI / GitHub configuration
+.github/ @YOUSEF-ysfxjo

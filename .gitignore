@@ -13,6 +13,18 @@ __pycache__/
 *.pyc
 *.pyo
 .pytest_cache/
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+env/
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+profile_default/
+ipython_config.py
 
 # لا ترفع ملفات الأسرار (احتفظ بـ .env.example كقالب فقط)
 .env
