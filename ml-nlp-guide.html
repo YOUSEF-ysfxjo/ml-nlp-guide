@@ -667,6 +667,51 @@ print("Most similar to 'cat':", wv.most_similar("cat", topn=3))</code></pre><but
         </div>
       </section>
 
+      <section class="section" id="coffee-flavor-map-phase1">
+        <h2><span class="num">★</span> Case study: Coffee Flavor Map — Phase 1 (Word2Vec)</h2>
+        <p>This section documents a <strong>complete applied project</strong> that implements Phase A in practice: we built a <strong>semantic space for coffee flavors</strong> using Word2Vec, from raw data to trained model, evaluation, and 2D visualization. It serves as a closing anchor for the guide: what we set out to do, where the creativity and innovation lie, what we achieved, and why doing it with a “classic” model (Word2Vec, 2013) still matters.</p>
+
+        <h3>Goal and scope</h3>
+        <p><strong>Goal:</strong> Build a <strong>semantic digital space</strong> for coffee-tasting language so that related flavors (e.g. lemon, citrus, jasmine; chocolate, cocoa, nutty) sit close in the embedding space, and analogies (e.g. <em>berry + chocolate − lemon ≈ ?</em>) yield sensible flavor terms. The project is part of a larger plan (Coffee Flavor Map) that will later compare this <strong>global, statistical</strong> approach (Phase 1) with <strong>contextual</strong> sentence embeddings (Phase 2) and then benchmark both (Phase 3). Phase 1 corresponds to <strong>Phase A</strong> of this guide: Word2Vec, distributional hypothesis, one fixed vector per word.</p>
+
+        <h3>Where the creativity and innovation are</h3>
+        <ul>
+          <li><strong>Domain choice:</strong> Coffee reviews and tasting notes are a narrow, real-world domain. We are not using a generic corpus; we train on language that is rich in flavor vocabulary and structure (aroma, mouthfeel, finish), so the learned space is interpretable and useful for flavor discovery and comparison.</li>
+          <li><strong>End-to-end pipeline:</strong> We implemented the full path: raw data discovery → cleaning and preprocessing (lowercasing, punctuation stripping, sentence splitting) → tokenized corpus → Word2Vec training → evaluation (similarity table, <code>most_similar</code>, analogy) → 2D visualization (PCA) of flavor terms. Every step is documented and reproducible in notebooks and saved artifacts.</li>
+          <li><strong>Evaluation design:</strong> We defined a small set of flavor terms (aligned with coffee-tasting language), computed pairwise cosine similarities among them, and restricted <code>most_similar</code> to that set. That turns the generic Word2Vec API into a domain-specific “flavor neighborhood” and a 2D map where related flavors cluster (e.g. lemon–citrus–jasmine; chocolate–cocoa–floral–nutty; berry–vanilla–honey–caramel).</li>
+          <li><strong>Learning by doing:</strong> The project was carried out with a “write the code yourself” and “advisor mode” approach: concepts and steps were planned in the guide and work plan; implementation and debugging were done by hand. The guide and this case study close the loop between theory (Word2Vec, distributional hypothesis) and practice.</li>
+        </ul>
+
+        <h3>What we achieved</h3>
+        <ul>
+          <li><strong>Data:</strong> Raw coffee reviews (Kaggle: simplified_coffee.csv, 1,246 reviews) → cleaned and sentence-split into 5,092 segments in <code>data/processed/corpus.txt</code>. Preprocessing: lowercase, strip punctuation (keep hyphens for terms like “sweet-tart”), split on sentence boundaries, drop empty/short tokens.</li>
+          <li><strong>Model:</strong> Word2Vec (Gensim), Skip-gram (<code>sg=1</code>), <code>vector_size=100</code>, <code>window=5</code>, <code>min_count=10</code>. Vocabulary size 359. Model saved as <code>word2vec.model</code> in <code>phase1_global/</code>.</li>
+          <li><strong>Similarity:</strong> Pairwise cosine similarity table for 13 flavor terms (lemon, chocolate, cocoa, floral, nutty, citrus, berry, honey, vanilla, fruity, caramel, roasted, jasmine). Highlights: lemon–citrus 0.90, lemon–jasmine 0.91; chocolate–cocoa 0.91, chocolate–floral 0.93; citrus–jasmine 0.96; berry–vanilla 0.97; honey–vanilla 0.90; caramel–vanilla 0.92. Related flavors cluster as intended.</li>
+          <li><strong>Analogy:</strong> <em>berry + chocolate − lemon</em> (all lowercase to match vocab) → top result <strong>pomegranate</strong> (0.90), then aromatic, full, flavor, crisp. Pomegranate is a plausible flavor in the “berry/chocolate, less citrus” direction; the analogy criterion for Phase 1 is satisfied.</li>
+          <li><strong>Visualization:</strong> Flavor-term vectors projected to 2D with PCA; scatter plot with labels. Semantically related flavors sit close (e.g. lemon–citrus–jasmine; chocolate–cocoa–floral–nutty; berry–vanilla–honey–caramel–roasted). Phase 1 success criteria met.</li>
+        </ul>
+
+        <h3>Why an “old” model (Word2Vec) and what it shows</h3>
+        <p>Word2Vec (2013) is a <strong>classic</strong> model: one fixed vector per word, no context sensitivity, no transformers. We used it on purpose:</p>
+        <ul>
+          <li><strong>Interpretability:</strong> The flavor space is small and the vocabulary is domain-specific. We can inspect <code>most_similar</code>, the similarity table, and the 2D plot and immediately see whether “lemon” is near “citrus” and “chocolate” near “cocoa.” There is no black box; the link between co-occurrence in reviews and vector geometry is direct.</li>
+          <li><strong>Low resource:</strong> We trained from scratch on ~5k sentences and a few minutes of compute. No GPU, no large pretrained model. That makes the project reproducible and educational: the full pipeline fits in a single notebook and a saved model file.</li>
+          <li><strong>Foundation for comparison:</strong> Phase 2 will use contextual embeddings (e.g. sentence-transformers) on the same reviews. Comparing Phase 1 (Word2Vec) and Phase 2 (contextual) on the same data and the same flavor terms will show when a simple, global representation is enough and when context-dependent meaning is needed. The “old” model is the baseline that makes the comparison meaningful.</li>
+        </ul>
+        <p>So we did not choose Word2Vec because it is the most powerful option today, but because it is the right tool for <strong>learning the concepts</strong> (distributional hypothesis, similarity, analogy), for <strong>building a transparent flavor space</strong>, and for <strong>setting up a clear before/after</strong> when we move to FastText, GloVe, or contextual models.</p>
+
+        <h3>Project artifacts (where everything is recorded)</h3>
+        <ul>
+          <li><strong>Notebook (training + evaluation + viz):</strong> <code>coffee-flavor-map/phase1_global/word2vec_train.ipynb</code> — corpus load, preprocessing, Word2Vec training, save, <code>most_similar</code>, analogy, flavor-term list, similarity table, PCA, 2D plot.</li>
+          <li><strong>Saved model:</strong> <code>coffee-flavor-map/phase1_global/word2vec.model</code> — Gensim Word2Vec, 359 vocab, 100-dim, Skip-gram.</li>
+          <li><strong>Data:</strong> <code>coffee-flavor-map/data/raw/</code> (raw CSV); <code>coffee-flavor-map/data/processed/corpus.txt</code> (cleaned, one sentence per line).</li>
+          <li><strong>Raw data discovery:</strong> <code>coffee-flavor-map/data_raw_review.ipynb</code> — exploration of shape, columns, review column, text length, metadata, noise; summary of what goes into the cleaning step.</li>
+          <li><strong>Plan and docs:</strong> <code>coffee-flavor-map/WORK_PLAN.md</code>, <code>coffee-flavor-map/README.md</code> — overall goal, phases, and link to this guide.</li>
+        </ul>
+
+        <p class="footer-note" style="margin-top:1rem;">Phase 1 (Word2Vec) is complete. Next in the project: optional GloVe comparison, then FastText; later Phase 2 (contextual embeddings) and Phase 3 (benchmarking). This case study is the bridge between the theory in the guide and the code and results in the repo.</p>
+      </section>
+
       <p class="footer-note">Summary compiled from foundational ML/NLP concepts. Topics continue with: RNNs → LSTMs → Attention → Transformers → LLMs.</p>
     </main>
     <div></div>
