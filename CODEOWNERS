@@ -1,0 +1,15 @@
+# CODEOWNERS
+# These owners will be automatically requested for review on pull requests.
+# See: https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default owners for everything in the repo
+* @YOUSEF-ysfxjo
+
+# Daily brief module
+/daily-brief/ @YOUSEF-ysfxjo
+
+# Coffee flavor map
+/coffee-flavor-map/ @YOUSEF-ysfxjo
+
+# GitHub Actions workflows
+/.github/workflows/ @YOUSEF-ysfxjo
